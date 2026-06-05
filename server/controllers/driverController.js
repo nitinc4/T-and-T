@@ -53,3 +53,25 @@ export const addDriver = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// @desc    Update driver own status
+// @route   PUT /api/drivers/me/status
+// @access  Private/Driver
+export const updateDriverStatus = async (req, res) => {
+  try {
+    const User = createUserModel(req.tenantDb);
+    const { status } = req.body;
+    
+    const driver = await User.findById(req.user._id);
+    if (!driver || driver.role !== 'Driver') {
+      return res.status(404).json({ message: 'Driver not found' });
+    }
+
+    driver.status = status;
+    await driver.save();
+    
+    res.json({ status: driver.status });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

@@ -45,8 +45,7 @@ class _ClientSelectionScreenState extends State<ClientSelectionScreen> {
       if (role == 'Customer') {
         context.go('/customer-dashboard');
       } else {
-        // TODO: Go to Driver Dashboard / Auth
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Driver app coming soon')));
+        context.go('/driver-login');
       }
     }
   }

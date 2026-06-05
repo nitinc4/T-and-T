@@ -5,6 +5,8 @@ import '../../features/onboarding/client_selection.dart';
 import '../../features/customer/customer_dashboard.dart';
 
 import '../../features/customer/package_details_screen.dart';
+import '../../features/driver/driver_login_screen.dart';
+import '../../features/driver/driver_dashboard.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/',
@@ -32,6 +34,13 @@ final appRouter = GoRouter(
         return PackageDetailsScreen(packageData: packageData);
       },
     ),
-    // TODO: Add Driver Dashboard Route
+    GoRoute(
+      path: '/driver-login',
+      builder: (context, state) => const DriverLoginScreen(),
+    ),
+    GoRoute(
+      path: '/driver-dashboard',
+      builder: (context, state) => const DriverDashboard(),
+    ),
   ],
 );

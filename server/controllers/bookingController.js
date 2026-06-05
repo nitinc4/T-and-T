@@ -21,6 +21,19 @@ export const getBookings = async (req, res) => {
   }
 };
 
+// @desc    Get driver specific bookings
+// @route   GET /api/bookings/driver/me
+// @access  Private/Driver
+export const getDriverBookings = async (req, res) => {
+  try {
+    const Booking = createBookingModel(req.tenantDb);
+    const bookings = await Booking.find({ driver: req.user._id }).populate('vehicle', 'vehicleNumber brand model');
+    res.json(bookings);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // @desc    Create a booking
 // @route   POST /api/bookings
 // @access  Private/CompanyAdmin
@@ -86,6 +99,30 @@ export const assignResources = async (req, res) => {
 
     const updatedBooking = await Booking.findById(req.params.id).populate('driver', 'name').populate('vehicle', 'vehicleNumber');
     res.json(updatedBooking);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Update Booking Status
+// @route   PUT /api/bookings/:id/status
+// @access  Private
+export const updateBookingStatus = async (req, res) => {
+  try {
+    const Booking = createBookingModel(req.tenantDb);
+    const { status } = req.body;
+    
+    const booking = await Booking.findById(req.params.id);
+    if (!booking) return res.status(404).json({ message: 'Booking not found' });
+    
+    // Allow if CompanyAdmin or if it's the assigned Driver
+    if (req.user.role !== 'CompanyAdmin' && req.user._id.toString() !== booking.driver?.toString()) {
+      return res.status(403).json({ message: 'Not authorized' });
+    }
+
+    booking.bookingStatus = status;
+    await booking.save();
+    res.json(booking);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
