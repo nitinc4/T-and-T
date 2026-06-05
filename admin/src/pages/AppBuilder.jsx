@@ -75,6 +75,12 @@ const AppBuilder = () => {
       newLayout.push({ type: 'grid_categories', data: { title: 'Categories', items: [{ label: 'Beach', icon: 'beach_access' }] } });
     } else if (type === 'dynamic_package_list') {
       newLayout.push({ type: 'dynamic_package_list', data: { title: 'Live Packages (From CMS)' } });
+    } else if (type === 'image_carousel') {
+      newLayout.push({ type: 'image_carousel', data: { images: ['https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=800&q=80', 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=800&q=80'] } });
+    } else if (type === 'testimonials') {
+      newLayout.push({ type: 'testimonials', data: { title: 'Traveler Reviews', reviews: [{ name: 'John Doe', text: 'Best trip of my life!', rating: 5 }] } });
+    } else if (type === 'call_to_action') {
+      newLayout.push({ type: 'call_to_action', data: { title: 'Need Custom Planning?', subtitle: 'Speak to our travel experts today.', buttonText: 'Contact Us' } });
     }
     setConfig({ ...config, layout: newLayout });
   };
@@ -138,11 +144,14 @@ const AppBuilder = () => {
 
           <hr style={{ border: 'none', borderTop: '1px solid var(--color-border)', margin: '2rem 0' }} />
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
             <h2 style={{ fontSize: '1.25rem', fontWeight: 600 }}>Layout Blocks</h2>
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <button onClick={() => addBlock('hero_banner')} style={{ padding: '0.5rem', borderRadius: '8px', border: '1px solid #ddd', cursor: 'pointer', background: 'white' }}>+ Hero</button>
-              <button onClick={() => addBlock('dynamic_package_list')} style={{ padding: '0.5rem', borderRadius: '8px', border: '1px solid #ddd', cursor: 'pointer', background: 'white' }}>+ CMS Packages</button>
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <button onClick={() => addBlock('hero_banner')} style={{ padding: '0.5rem', borderRadius: '8px', border: '1px solid #ddd', cursor: 'pointer', background: 'white', fontSize: '0.8rem' }}>+ Hero</button>
+              <button onClick={() => addBlock('dynamic_package_list')} style={{ padding: '0.5rem', borderRadius: '8px', border: '1px solid #ddd', cursor: 'pointer', background: 'white', fontSize: '0.8rem' }}>+ CMS Packages</button>
+              <button onClick={() => addBlock('image_carousel')} style={{ padding: '0.5rem', borderRadius: '8px', border: '1px solid #ddd', cursor: 'pointer', background: 'white', fontSize: '0.8rem' }}>+ Carousel</button>
+              <button onClick={() => addBlock('testimonials')} style={{ padding: '0.5rem', borderRadius: '8px', border: '1px solid #ddd', cursor: 'pointer', background: 'white', fontSize: '0.8rem' }}>+ Reviews</button>
+              <button onClick={() => addBlock('call_to_action')} style={{ padding: '0.5rem', borderRadius: '8px', border: '1px solid #ddd', cursor: 'pointer', background: 'white', fontSize: '0.8rem' }}>+ CTA Banner</button>
             </div>
           </div>
 
@@ -155,6 +164,9 @@ const AppBuilder = () => {
                 {block.type === 'grid_categories' && 'Categories Grid'}
                 {block.type === 'horizontal_list' && 'Static Package List'}
                 {block.type === 'dynamic_package_list' && 'Live CMS Package Feed'}
+                {block.type === 'image_carousel' && 'Image Carousel'}
+                {block.type === 'testimonials' && 'Testimonials Slider'}
+                {block.type === 'call_to_action' && 'Call To Action Banner'}
               </div>
 
               {block.type === 'hero_banner' && (
@@ -175,6 +187,28 @@ const AppBuilder = () => {
                   <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.25rem' }}>Section Title</label>
                   <input type="text" value={block.data.title} onChange={(e) => updateBlockData(index, 'title', e.target.value)} style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #ccc' }} />
                   <p style={{ fontSize: '0.8rem', color: 'gray', marginTop: '0.5rem' }}>This block will automatically fetch the latest packages you create in the CMS.</p>
+                </>
+              )}
+
+              {block.type === 'image_carousel' && (
+                <p style={{ fontSize: '0.8rem', color: 'gray' }}>Displays a swiping carousel of promotional images. Edit JSON directly for advanced changes.</p>
+              )}
+
+              {block.type === 'testimonials' && (
+                <>
+                  <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.25rem' }}>Section Title</label>
+                  <input type="text" value={block.data.title} onChange={(e) => updateBlockData(index, 'title', e.target.value)} style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #ccc' }} />
+                </>
+              )}
+
+              {block.type === 'call_to_action' && (
+                <>
+                  <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.25rem' }}>Title</label>
+                  <input type="text" value={block.data.title} onChange={(e) => updateBlockData(index, 'title', e.target.value)} style={{ width: '100%', padding: '0.5rem', marginBottom: '1rem', borderRadius: '6px', border: '1px solid #ccc' }} />
+                  <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.25rem' }}>Subtitle</label>
+                  <input type="text" value={block.data.subtitle} onChange={(e) => updateBlockData(index, 'subtitle', e.target.value)} style={{ width: '100%', padding: '0.5rem', marginBottom: '1rem', borderRadius: '6px', border: '1px solid #ccc' }} />
+                  <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.25rem' }}>Button Text</label>
+                  <input type="text" value={block.data.buttonText} onChange={(e) => updateBlockData(index, 'buttonText', e.target.value)} style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #ccc' }} />
                 </>
               )}
             </div>
@@ -234,6 +268,35 @@ const AppBuilder = () => {
                         <span style={{ color: '#aaa', fontSize: '0.8rem' }}>Package 2</span>
                       </div>
                     </div>
+                  </div>
+                );
+              }
+              if (block.type === 'image_carousel') {
+                return (
+                  <div key={i} style={{ margin: '15px 10px', height: '120px', background: '#e0e0e0', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <span style={{ color: '#666', fontWeight: 'bold' }}>Image Carousel</span>
+                  </div>
+                );
+              }
+              if (block.type === 'testimonials') {
+                return (
+                  <div key={i} style={{ padding: '15px 10px' }}>
+                    <h3 style={{ margin: '0 0 10px 5px', fontSize: '1.1rem' }}>{block.data.title}</h3>
+                    <div style={{ display: 'flex', gap: '10px', overflowX: 'auto' }}>
+                      <div style={{ minWidth: '180px', height: '80px', background: 'white', border: '1px solid #eee', borderRadius: '12px', padding: '10px' }}>
+                        ⭐⭐⭐⭐⭐
+                        <div style={{ fontSize: '0.8rem', color: '#666', marginTop: '5px' }}>"Great trip!"</div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+              if (block.type === 'call_to_action') {
+                return (
+                  <div key={i} style={{ margin: '15px', padding: '20px', background: config.theme.primaryColor, borderRadius: '16px', textAlign: 'center', color: 'white' }}>
+                    <h3 style={{ margin: '0 0 5px 0', fontSize: '1.2rem' }}>{block.data.title}</h3>
+                    <div style={{ fontSize: '0.8rem', marginBottom: '15px' }}>{block.data.subtitle}</div>
+                    <button style={{ background: 'white', color: config.theme.primaryColor, border: 'none', padding: '8px 20px', borderRadius: '20px', fontWeight: 'bold' }}>{block.data.buttonText}</button>
                   </div>
                 );
               }
