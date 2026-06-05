@@ -11,6 +11,7 @@ import Customers from './pages/Customers';
 import Packages from './pages/Packages';
 import CustomerProfile from './pages/CustomerProfile';
 import AppBuilder from './pages/AppBuilder';
+import Settings from './pages/Settings';
 import './index.css';
 
 
@@ -18,13 +19,6 @@ const Subscriptions = () => (
   <div className="animate-fade-in">
     <h1 className="heading-1">Subscriptions</h1>
     <p className="text-muted">View and manage billing plans.</p>
-  </div>
-);
-
-const Settings = () => (
-  <div className="animate-fade-in">
-    <h1 className="heading-1">Settings</h1>
-    <p className="text-muted">Platform configurations.</p>
   </div>
 );
 

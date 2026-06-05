@@ -3,8 +3,8 @@ import '../../features/onboarding/splash_screen.dart';
 import '../../features/onboarding/role_selection.dart';
 import '../../features/onboarding/client_selection.dart';
 import '../../features/customer/customer_dashboard.dart';
-
 import '../../features/customer/package_details_screen.dart';
+import '../../features/customer/checkout_screen.dart';
 import '../../features/driver/driver_login_screen.dart';
 import '../../features/driver/driver_dashboard.dart';
 
@@ -32,6 +32,13 @@ final appRouter = GoRouter(
       builder: (context, state) {
         final packageData = state.extra as Map<String, dynamic>;
         return PackageDetailsScreen(packageData: packageData);
+      },
+    ),
+    GoRoute(
+      path: '/checkout',
+      builder: (context, state) {
+        final packageData = state.extra as Map<String, dynamic>;
+        return CheckoutScreen(packageData: packageData);
       },
     ),
     GoRoute(

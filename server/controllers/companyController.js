@@ -102,3 +102,24 @@ export const updateAppConfig = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// @desc    Update company Razorpay keys
+// @route   PUT /api/companies/me/razorpay-keys
+// @access  Private/CompanyAdmin
+export const updateRazorpayKeys = async (req, res) => {
+  try {
+    const { razorpayKeyId, razorpayKeySecret } = req.body;
+    const company = await Company.findById(req.user.companyId);
+
+    if (company) {
+      company.razorpayKeyId = razorpayKeyId;
+      company.razorpayKeySecret = razorpayKeySecret;
+      await company.save();
+      res.json({ message: 'Razorpay keys updated successfully' });
+    } else {
+      res.status(404).json({ message: 'Company not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

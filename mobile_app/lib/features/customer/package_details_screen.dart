@@ -133,12 +133,7 @@ class PackageDetailsScreen extends StatelessWidget {
           height: 56,
           child: ElevatedButton(
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Booking Engine Coming Soon!'),
-                  backgroundColor: Colors.green,
-                ),
-              );
+              context.push('/checkout', extra: packageData);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: primaryColor,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/network/api_client.dart';
 import '../../core/sdui/sdui_engine.dart';
+import 'customer_bookings_screen.dart';
 
 class CustomerDashboard extends StatefulWidget {
   const CustomerDashboard({super.key});
@@ -15,6 +16,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
   bool _isLoading = true;
   String? _error;
   Color _primaryColor = Colors.blue;
+  int _currentIndex = 0;
 
   @override
   void initState() {
@@ -78,9 +80,9 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: const Text(
-          'Explore',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 24),
+        title: Text(
+          _currentIndex == 0 ? 'Explore' : 'My Bookings',
+          style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 24),
         ),
         actions: [
           IconButton(
@@ -89,11 +91,23 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
           )
         ],
       ),
-      body: ListView.builder(
-        itemCount: layout.length,
-        itemBuilder: (context, index) {
-          return SDUIEngine.buildWidget(context, layout[index], _primaryColor);
-        },
+      body: _currentIndex == 0
+          ? ListView.builder(
+              itemCount: layout.length,
+              itemBuilder: (context, index) {
+                return SDUIEngine.buildWidget(context, layout[index], _primaryColor);
+              },
+            )
+          : const CustomerBookingsScreen(),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (index) => setState(() => _currentIndex = index),
+        selectedItemColor: _primaryColor,
+        unselectedItemColor: Colors.black38,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.explore), label: 'Explore'),
+          BottomNavigationBarItem(icon: Icon(Icons.receipt_long), label: 'Bookings'),
+        ],
       ),
     );
   }

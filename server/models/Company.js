@@ -10,7 +10,9 @@ const companySchema = new mongoose.Schema({
   planType: { type: String, enum: ['Starter', 'Professional', 'Enterprise'], default: 'Starter' },
   expiryDate: { type: Date },
   isActive: { type: Boolean, default: true },
-  appConfig: { type: Object, default: {} }
+  appConfig: { type: Object, default: {} },
+  razorpayKeyId: { type: String },
+  razorpayKeySecret: { type: String }
 }, { timestamps: true });
 
 export default mongoose.model('Company', companySchema);
