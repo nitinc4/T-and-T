@@ -11,6 +11,7 @@ import bookingRoutes from './routes/bookingRoutes.js';
 import customerRoutes from './routes/customerRoutes.js';
 import publicRoutes from './routes/publicRoutes.js';
 import packageRoutes from './routes/packageRoutes.js';
+import reportRoutes from './routes/reportRoutes.js';
 
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
@@ -50,6 +51,7 @@ app.use('/api/drivers', driverRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/customers', customerRoutes);
 app.use('/api/packages', packageRoutes);
+app.use('/api/reports', reportRoutes);
 
 // Database connection
 const MONGODB_URI = process.env.MONGODB_URI;

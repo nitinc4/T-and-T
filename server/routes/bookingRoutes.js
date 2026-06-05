@@ -1,5 +1,6 @@
 import express from 'express';
-import { getBookings, createBooking, assignResources } from '../controllers/bookingController.js';
+import { getBookings, createBooking, updateBookingStatus, assignResources } from '../controllers/bookingController.js';
+import { generateInvoice } from '../controllers/invoiceController.js';
 import { protect, restrictTo } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -8,7 +9,8 @@ router.route('/')
   .get(protect, restrictTo('CompanyAdmin'), getBookings)
   .post(protect, restrictTo('CompanyAdmin'), createBooking);
 
-router.route('/:id/assign')
-  .put(protect, restrictTo('CompanyAdmin'), assignResources);
+router.put('/:id/status', updateBookingStatus);
+router.put('/:id/assign', protect, restrictTo('CompanyAdmin'), assignResources);
+router.get('/:id/invoice', generateInvoice);
 
 export default router;

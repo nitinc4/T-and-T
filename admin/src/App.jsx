@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Companies from './pages/Companies';
 import Vehicles from './pages/Vehicles';
 import Drivers from './pages/Drivers';
+import Dashboard from './pages/Dashboard';
 import Bookings from './pages/Bookings';
 import Customers from './pages/Customers';
 import Packages from './pages/Packages';
@@ -12,32 +13,6 @@ import CustomerProfile from './pages/CustomerProfile';
 import AppBuilder from './pages/AppBuilder';
 import './index.css';
 
-// Placeholder Components
-const Dashboard = () => (
-  <div className="animate-fade-in">
-    <h1 className="heading-1">Dashboard</h1>
-    <p className="text-muted" style={{ marginBottom: '2rem' }}>Welcome to TravelPro SaaS Admin Panel</p>
-    
-    <div className="dashboard-grid">
-      <div className="glass-card stat-card">
-        <span className="stat-label">Total Companies</span>
-        <span className="stat-value">1</span>
-      </div>
-      <div className="glass-card stat-card">
-        <span className="stat-label">Active Subscriptions</span>
-        <span className="stat-value">1</span>
-      </div>
-      <div className="glass-card stat-card">
-        <span className="stat-label">Total Bookings</span>
-        <span className="stat-value">0</span>
-      </div>
-      <div className="glass-card stat-card">
-        <span className="stat-label">Monthly Revenue</span>
-        <span className="stat-value">₹0</span>
-      </div>
-    </div>
-  </div>
-);
 
 const Subscriptions = () => (
   <div className="animate-fade-in">
@@ -94,6 +69,9 @@ const AdminLayout = ({ children }) => {
 
           {user?.role === 'CompanyAdmin' && (
             <>
+              <li className="nav-item">
+                <NavLink to="/" end className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Dashboard</NavLink>
+              </li>
               <li className="nav-item">
                 <NavLink to="/vehicles" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Vehicles</NavLink>
               </li>

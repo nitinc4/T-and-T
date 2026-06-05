@@ -74,6 +74,23 @@ const Bookings = () => {
     }
   };
 
+  const handleDownloadInvoice = async (bookingId) => {
+    try {
+      const response = await api.get(`/bookings/${bookingId}/invoice`, {
+        responseType: 'blob'
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Invoice-${bookingId}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+    } catch (err) {
+      alert('Failed to download invoice');
+    }
+  };
+
   if (loading) return <div className="animate-fade-in"><h1 className="heading-1">Loading...</h1></div>;
   if (error) return <div className="animate-fade-in" style={{color: 'var(--color-danger)'}}>{error}</div>;
 
@@ -184,6 +201,11 @@ const Bookings = () => {
                     {b.bookingStatus === 'Pending' && (
                       <button onClick={() => openAssignModal(b)} style={{ background: 'var(--color-primary)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: 'var(--radius-sm)', cursor: 'pointer', fontSize:'0.8rem' }}>
                         Assign
+                      </button>
+                    )}
+                    {(b.bookingStatus === 'Confirmed' || b.bookingStatus === 'Completed') && (
+                      <button onClick={() => handleDownloadInvoice(b._id)} style={{ background: 'var(--color-secondary)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: 'var(--radius-sm)', cursor: 'pointer', fontSize:'0.8rem', marginLeft: '0.5rem' }}>
+                        Invoice
                       </button>
                     )}
                   </td>
