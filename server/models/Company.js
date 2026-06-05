@@ -9,7 +9,8 @@ const companySchema = new mongoose.Schema({
   address: { type: String },
   planType: { type: String, enum: ['Starter', 'Professional', 'Enterprise'], default: 'Starter' },
   expiryDate: { type: Date },
-  isActive: { type: Boolean, default: true }
+  isActive: { type: Boolean, default: true },
+  appConfig: { type: Object, default: {} }
 }, { timestamps: true });
 
 export default mongoose.model('Company', companySchema);

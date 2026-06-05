@@ -12,7 +12,7 @@ class ApiClient {
   ApiClient._internal() {
     dio = Dio(
       BaseOptions(
-        baseUrl: 'http://10.0.2.2:5000/api', // Android Emulator localhost
+        baseUrl: 'https://t-and-t.onrender.com/api', // Render deployment
         connectTimeout: const Duration(seconds: 10),
         receiveTimeout: const Duration(seconds: 10),
       ),

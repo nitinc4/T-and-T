@@ -82,3 +82,23 @@ export const updateCompany = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// @desc    Update company app config (SDUI)
+// @route   PUT /api/companies/:id/config
+// @access  Private (SuperAdmin or CompanyAdmin of that company)
+export const updateAppConfig = async (req, res) => {
+  try {
+    // In a real app we'd verify the user is SuperAdmin or the owner CompanyAdmin
+    const company = await Company.findById(req.params.id);
+
+    if (company) {
+      company.appConfig = req.body.appConfig || company.appConfig;
+      const updatedCompany = await company.save();
+      res.json({ message: 'App configuration updated', appConfig: updatedCompany.appConfig });
+    } else {
+      res.status(404).json({ message: 'Company not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
