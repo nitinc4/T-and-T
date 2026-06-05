@@ -8,6 +8,8 @@ import companyRoutes from './routes/companyRoutes.js';
 import vehicleRoutes from './routes/vehicleRoutes.js';
 import driverRoutes from './routes/driverRoutes.js';
 import bookingRoutes from './routes/bookingRoutes.js';
+import customerRoutes from './routes/customerRoutes.js';
+import publicRoutes from './routes/publicRoutes.js';
 
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
@@ -39,11 +41,13 @@ app.get('/api/health', (req, res) => {
 });
 
 // API Routes
+app.use('/api/public', publicRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/companies', companyRoutes);
 app.use('/api/vehicles', vehicleRoutes);
 app.use('/api/drivers', driverRoutes);
 app.use('/api/bookings', bookingRoutes);
+app.use('/api/customers', customerRoutes);
 
 // Database connection
 const MONGODB_URI = process.env.MONGODB_URI;

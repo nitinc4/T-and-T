@@ -6,6 +6,8 @@ import Companies from './pages/Companies';
 import Vehicles from './pages/Vehicles';
 import Drivers from './pages/Drivers';
 import Bookings from './pages/Bookings';
+import Customers from './pages/Customers';
+import CustomerProfile from './pages/CustomerProfile';
 import './index.css';
 
 // Placeholder Components
@@ -99,6 +101,9 @@ const AdminLayout = ({ children }) => {
               <li className="nav-item">
                 <NavLink to="/bookings" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Bookings</NavLink>
               </li>
+              <li className="nav-item">
+                <NavLink to="/customers" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Customers</NavLink>
+              </li>
             </>
           )}
 
@@ -149,6 +154,8 @@ function App() {
           <Route path="/vehicles" element={<ProtectedRoute><AdminLayout><Vehicles /></AdminLayout></ProtectedRoute>} />
           <Route path="/drivers" element={<ProtectedRoute><AdminLayout><Drivers /></AdminLayout></ProtectedRoute>} />
           <Route path="/bookings" element={<ProtectedRoute><AdminLayout><Bookings /></AdminLayout></ProtectedRoute>} />
+          <Route path="/customers" element={<ProtectedRoute><AdminLayout><Customers /></AdminLayout></ProtectedRoute>} />
+          <Route path="/customers/:id" element={<ProtectedRoute><AdminLayout><CustomerProfile /></AdminLayout></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><AdminLayout><Settings /></AdminLayout></ProtectedRoute>} />
         </Routes>
       </Router>
