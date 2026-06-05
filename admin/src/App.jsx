@@ -7,6 +7,7 @@ import Vehicles from './pages/Vehicles';
 import Drivers from './pages/Drivers';
 import Bookings from './pages/Bookings';
 import Customers from './pages/Customers';
+import Packages from './pages/Packages';
 import CustomerProfile from './pages/CustomerProfile';
 import AppBuilder from './pages/AppBuilder';
 import './index.css';
@@ -103,6 +104,9 @@ const AdminLayout = ({ children }) => {
                 <NavLink to="/bookings" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Bookings</NavLink>
               </li>
               <li className="nav-item">
+                <NavLink to="/packages" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Packages</NavLink>
+              </li>
+              <li className="nav-item">
                 <NavLink to="/customers" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Customers</NavLink>
               </li>
               <li className="nav-item">
@@ -158,6 +162,7 @@ function App() {
           <Route path="/vehicles" element={<ProtectedRoute><AdminLayout><Vehicles /></AdminLayout></ProtectedRoute>} />
           <Route path="/drivers" element={<ProtectedRoute><AdminLayout><Drivers /></AdminLayout></ProtectedRoute>} />
           <Route path="/bookings" element={<ProtectedRoute><AdminLayout><Bookings /></AdminLayout></ProtectedRoute>} />
+          <Route path="/packages" element={<ProtectedRoute><AdminLayout><Packages /></AdminLayout></ProtectedRoute>} />
           <Route path="/customers" element={<ProtectedRoute><AdminLayout><Customers /></AdminLayout></ProtectedRoute>} />
           <Route path="/customers/:id" element={<ProtectedRoute><AdminLayout><CustomerProfile /></AdminLayout></ProtectedRoute>} />
           <Route path="/app-builder" element={<ProtectedRoute><AdminLayout><AppBuilder /></AdminLayout></ProtectedRoute>} />

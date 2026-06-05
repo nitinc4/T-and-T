@@ -1,4 +1,6 @@
 import Company from '../models/Company.js';
+import { getTenantConnection } from '../utils/tenantConnection.js';
+import { createPackageModel } from '../models/Package.js';
 
 export const getActiveCompanies = async (req, res) => {
   try {
@@ -67,6 +69,45 @@ export const getCompanyConfig = async (req, res) => {
           }
         ]
       };
+    }
+
+    // Dynamic Injection: Check if layout has 'dynamic_package_list'
+    // If so, fetch actual packages from the CMS and convert to 'horizontal_list'
+    if (sduiConfig.layout) {
+      const tenantConn = getTenantConnection(company._id);
+      const Package = createPackageModel(tenantConn);
+      
+      const updatedLayout = [];
+      for (const block of sduiConfig.layout) {
+        if (block.type === 'dynamic_package_list') {
+          try {
+            // Fetch latest 5 packages
+            const packages = await Package.find({}).limit(5);
+            
+            updatedLayout.push({
+              type: 'horizontal_list', // Mobile app understands 'horizontal_list'
+              data: {
+                title: block.data?.title || 'Our Packages',
+                items: packages.map(pkg => ({
+                  title: pkg.title,
+                  price: pkg.price,
+                  image: pkg.imageUrl
+                }))
+              }
+            });
+          } catch (err) {
+            console.error("Error fetching dynamic packages:", err);
+            // Fallback empty list if error
+            updatedLayout.push({
+              type: 'horizontal_list',
+              data: { title: block.data?.title || 'Our Packages', items: [] }
+            });
+          }
+        } else {
+          updatedLayout.push(block);
+        }
+      }
+      sduiConfig.layout = updatedLayout;
     }
 
     res.json(sduiConfig);

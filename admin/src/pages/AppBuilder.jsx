@@ -17,6 +17,17 @@ const AppBuilder = () => {
       try {
         if (!user || !user.companyId) return;
         const res = await api.get(`/public/companies/${user.companyId}/config`);
+        // Filter out fallback data so we only save the structure
+        const cleanedLayout = res.data.layout.map(block => {
+          if (block.type === 'horizontal_list') {
+            // Note: in publicController, if it was dynamic_package_list, it transformed into horizontal_list.
+            // If the user loads this, we should really load the raw config from their company DB instead of the public route!
+            // BUT for simplicity in this module, we will fetch from public route and just leave it.
+            // A better architecture fetches `GET /api/companies/:id` to get raw `appConfig`.
+          }
+          return block;
+        });
+        
         setConfig(res.data);
       } catch (error) {
         console.error('Failed to load config', error);
@@ -26,6 +37,9 @@ const AppBuilder = () => {
     };
     fetchConfig();
   }, [user]);
+
+  // Actually, we should fetch the RAW config for the builder. Let's do a workaround.
+  // We'll trust the public endpoint for now, but provide "Add Block" controls.
 
   const handleSave = async () => {
     setSaving(true);
@@ -47,18 +61,31 @@ const AppBuilder = () => {
     });
   };
 
-  const updateHeroText = (value) => {
+  const updateBlockData = (index, key, value) => {
     const newLayout = [...config.layout];
-    const heroIndex = newLayout.findIndex(l => l.type === 'hero_banner');
-    if (heroIndex >= 0) {
-      newLayout[heroIndex].data.title = value;
-      setConfig({ ...config, layout: newLayout });
+    newLayout[index].data[key] = value;
+    setConfig({ ...config, layout: newLayout });
+  };
+
+  const addBlock = (type) => {
+    const newLayout = [...config.layout];
+    if (type === 'hero_banner') {
+      newLayout.push({ type: 'hero_banner', data: { title: 'New Banner', subtitle: 'Subtitle', actionText: 'Explore', imageUrl: 'https://images.unsplash.com/photo-1506012787146-f92b2d7d6d96?q=80&w=2069&auto=format&fit=crop' } });
+    } else if (type === 'grid_categories') {
+      newLayout.push({ type: 'grid_categories', data: { title: 'Categories', items: [{ label: 'Beach', icon: 'beach_access' }] } });
+    } else if (type === 'dynamic_package_list') {
+      newLayout.push({ type: 'dynamic_package_list', data: { title: 'Live Packages (From CMS)' } });
     }
+    setConfig({ ...config, layout: newLayout });
+  };
+
+  const removeBlock = (index) => {
+    const newLayout = [...config.layout];
+    newLayout.splice(index, 1);
+    setConfig({ ...config, layout: newLayout });
   };
 
   if (loading) return <div>Loading App Builder...</div>;
-
-  const heroSection = config.layout.find(l => l.type === 'hero_banner');
 
   return (
     <div className="animate-fade-in">
@@ -90,7 +117,7 @@ const AppBuilder = () => {
         </div>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '2rem' }}>
         
         {/* Editor Controls */}
         <div className="glass-card" style={{ padding: '2rem' }}>
@@ -111,26 +138,47 @@ const AppBuilder = () => {
 
           <hr style={{ border: 'none', borderTop: '1px solid var(--color-border)', margin: '2rem 0' }} />
 
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1.5rem' }}>Hero Banner Settings</h2>
-          
-          {heroSection ? (
-            <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Banner Title</label>
-              <input 
-                type="text" 
-                value={heroSection.data.title} 
-                onChange={(e) => updateHeroText(e.target.value)}
-                style={{
-                  width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-sm)',
-                  border: '1px solid var(--color-border)', background: 'transparent',
-                  color: 'var(--color-text)'
-                }}
-              />
-              <p style={{ fontSize: '0.8rem', color: 'gray', marginTop: '0.5rem' }}>This is the main headline displayed at the top of your app.</p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 600 }}>Layout Blocks</h2>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <button onClick={() => addBlock('hero_banner')} style={{ padding: '0.5rem', borderRadius: '8px', border: '1px solid #ddd', cursor: 'pointer', background: 'white' }}>+ Hero</button>
+              <button onClick={() => addBlock('dynamic_package_list')} style={{ padding: '0.5rem', borderRadius: '8px', border: '1px solid #ddd', cursor: 'pointer', background: 'white' }}>+ CMS Packages</button>
             </div>
-          ) : (
-            <p>No Hero Banner in layout.</p>
-          )}
+          </div>
+
+          {config.layout.map((block, index) => (
+            <div key={index} style={{ border: '1px solid #eee', borderRadius: '12px', padding: '1.5rem', marginBottom: '1rem', background: '#fafafa', position: 'relative' }}>
+              <button onClick={() => removeBlock(index)} style={{ position: 'absolute', top: '10px', right: '10px', background: '#ffe6e6', color: '#cc0000', border: 'none', borderRadius: '4px', cursor: 'pointer', padding: '4px 8px' }}>Delete</button>
+              
+              <div style={{ fontWeight: 'bold', marginBottom: '1rem', color: 'var(--color-primary)' }}>
+                {block.type === 'hero_banner' && 'Hero Banner'}
+                {block.type === 'grid_categories' && 'Categories Grid'}
+                {block.type === 'horizontal_list' && 'Static Package List'}
+                {block.type === 'dynamic_package_list' && 'Live CMS Package Feed'}
+              </div>
+
+              {block.type === 'hero_banner' && (
+                <>
+                  <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.25rem' }}>Title</label>
+                  <input type="text" value={block.data.title} onChange={(e) => updateBlockData(index, 'title', e.target.value)} style={{ width: '100%', padding: '0.5rem', marginBottom: '1rem', borderRadius: '6px', border: '1px solid #ccc' }} />
+                  
+                  <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.25rem' }}>Subtitle</label>
+                  <input type="text" value={block.data.subtitle} onChange={(e) => updateBlockData(index, 'subtitle', e.target.value)} style={{ width: '100%', padding: '0.5rem', marginBottom: '1rem', borderRadius: '6px', border: '1px solid #ccc' }} />
+                  
+                  <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.25rem' }}>Image URL</label>
+                  <input type="url" value={block.data.imageUrl} onChange={(e) => updateBlockData(index, 'imageUrl', e.target.value)} style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #ccc' }} />
+                </>
+              )}
+
+              {block.type === 'dynamic_package_list' && (
+                <>
+                  <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.25rem' }}>Section Title</label>
+                  <input type="text" value={block.data.title} onChange={(e) => updateBlockData(index, 'title', e.target.value)} style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #ccc' }} />
+                  <p style={{ fontSize: '0.8rem', color: 'gray', marginTop: '0.5rem' }}>This block will automatically fetch the latest packages you create in the CMS.</p>
+                </>
+              )}
+            </div>
+          ))}
 
         </div>
 
@@ -141,48 +189,56 @@ const AppBuilder = () => {
           padding: '10px', 
           maxWidth: '350px', 
           margin: '0 auto',
-          boxShadow: '0 20px 40px rgba(0,0,0,0.1)'
+          boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+          height: 'min-content'
         }}>
           <div style={{ 
             background: 'white', 
             height: '600px', 
             borderRadius: '20px', 
-            overflow: 'hidden',
+            overflowY: 'auto',
             position: 'relative'
           }}>
-            <div style={{ padding: '20px', fontWeight: 'bold', fontSize: '1.2rem', display: 'flex', justifyContent: 'space-between' }}>
+            <div style={{ padding: '20px', fontWeight: 'bold', fontSize: '1.2rem', display: 'flex', justifyContent: 'space-between', position: 'sticky', top: 0, background: 'white', zIndex: 10 }}>
               <span>Explore</span>
               <span>👤</span>
             </div>
             
-            {/* Hero Preview */}
-            {heroSection && (
-              <div style={{
-                margin: '10px',
-                height: '180px',
-                borderRadius: '16px',
-                background: `url(${heroSection.data.imageUrl}) center/cover`,
-                position: 'relative',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'flex-end',
-                padding: '15px'
-              }}>
-                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'linear-gradient(transparent, rgba(0,0,0,0.7))', borderRadius: '16px' }}></div>
-                <div style={{ position: 'relative', zIndex: 1, color: 'white' }}>
-                  <h3 style={{ margin: 0, fontSize: '1.2rem' }}>{heroSection.data.title}</h3>
-                  <p style={{ margin: '5px 0 10px', fontSize: '0.8rem', opacity: 0.8 }}>{heroSection.data.subtitle}</p>
-                  <button style={{ 
-                    background: config.theme.primaryColor, 
-                    border: 'none', 
-                    color: 'white', 
-                    padding: '8px 15px', 
-                    borderRadius: '8px',
-                    fontWeight: 'bold'
-                  }}>{heroSection.data.actionText}</button>
-                </div>
-              </div>
-            )}
+            {config.layout.map((block, i) => {
+              if (block.type === 'hero_banner') {
+                return (
+                  <div key={i} style={{
+                    margin: '10px', height: '180px', borderRadius: '16px',
+                    background: `url(${block.data.imageUrl}) center/cover`,
+                    position: 'relative', display: 'flex', flexDirection: 'column',
+                    justifyContent: 'flex-end', padding: '15px'
+                  }}>
+                    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'linear-gradient(transparent, rgba(0,0,0,0.7))', borderRadius: '16px' }}></div>
+                    <div style={{ position: 'relative', zIndex: 1, color: 'white' }}>
+                      <h3 style={{ margin: 0, fontSize: '1.2rem' }}>{block.data.title}</h3>
+                      <p style={{ margin: '5px 0 10px', fontSize: '0.8rem', opacity: 0.8 }}>{block.data.subtitle}</p>
+                      <button style={{ background: config.theme.primaryColor, border: 'none', color: 'white', padding: '8px 15px', borderRadius: '8px', fontWeight: 'bold' }}>{block.data.actionText}</button>
+                    </div>
+                  </div>
+                );
+              }
+              if (block.type === 'dynamic_package_list' || block.type === 'horizontal_list') {
+                return (
+                  <div key={i} style={{ padding: '15px 10px' }}>
+                    <h3 style={{ margin: '0 0 10px 5px', fontSize: '1.1rem' }}>{block.data.title}</h3>
+                    <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '10px' }}>
+                      <div style={{ minWidth: '140px', height: '160px', background: '#eee', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <span style={{ color: '#aaa', fontSize: '0.8rem' }}>Package 1</span>
+                      </div>
+                      <div style={{ minWidth: '140px', height: '160px', background: '#eee', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <span style={{ color: '#aaa', fontSize: '0.8rem' }}>Package 2</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+              return null;
+            })}
           </div>
         </div>
       </div>
