@@ -1,23 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class SDUIEngine {
-  static Widget buildWidget(Map<String, dynamic> json, Color primaryColor) {
+  static Widget buildWidget(BuildContext context, Map<String, dynamic> json, Color primaryColor) {
     final type = json['type'];
     final data = json['data'];
 
     switch (type) {
       case 'hero_banner':
-        return _buildHeroBanner(data, primaryColor);
+        return _buildHeroBanner(context, data, primaryColor);
       case 'grid_categories':
-        return _buildGridCategories(data, primaryColor);
+        return _buildGridCategories(context, data, primaryColor);
       case 'horizontal_list':
-        return _buildHorizontalList(data, primaryColor);
+        return _buildHorizontalList(context, data, primaryColor);
       default:
         return const SizedBox.shrink();
     }
   }
 
-  static Widget _buildHeroBanner(Map<String, dynamic> data, Color primaryColor) {
+  static Widget _buildHeroBanner(BuildContext context, Map<String, dynamic> data, Color primaryColor) {
     return Container(
       margin: const EdgeInsets.all(16.0),
       height: 220,
@@ -90,7 +91,7 @@ class SDUIEngine {
     );
   }
 
-  static Widget _buildGridCategories(Map<String, dynamic> data, Color primaryColor) {
+  static Widget _buildGridCategories(BuildContext context, Map<String, dynamic> data, Color primaryColor) {
     final items = List<Map<String, dynamic>>.from(data['items']);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -134,7 +135,7 @@ class SDUIEngine {
     );
   }
 
-  static Widget _buildHorizontalList(Map<String, dynamic> data, Color primaryColor) {
+  static Widget _buildHorizontalList(BuildContext context, Map<String, dynamic> data, Color primaryColor) {
     final items = List<Map<String, dynamic>>.from(data['items']);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -158,39 +159,44 @@ class SDUIEngine {
               separatorBuilder: (context, index) => const SizedBox(width: 16),
               itemBuilder: (context, index) {
                 final item = items[index];
-                return Container(
-                  width: 160,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    image: DecorationImage(
-                      image: NetworkImage(item['image']),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+                return GestureDetector(
+                  onTap: () {
+                    context.push('/package-details', extra: item);
+                  },
                   child: Container(
+                    width: 160,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(16),
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [Colors.transparent, Colors.black.withOpacity(0.6)],
+                      image: DecorationImage(
+                        image: NetworkImage(item['image'] ?? 'https://via.placeholder.com/400'),
+                        fit: BoxFit.cover,
                       ),
                     ),
-                    padding: const EdgeInsets.all(12.0),
-                    alignment: Alignment.bottomLeft,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          item['title'],
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [Colors.transparent, Colors.black.withOpacity(0.6)],
                         ),
-                        Text(
-                          item['price'],
-                          style: TextStyle(color: primaryColor, fontWeight: FontWeight.w800),
-                        ),
-                      ],
+                      ),
+                      padding: const EdgeInsets.all(12.0),
+                      alignment: Alignment.bottomLeft,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            item['title'] ?? 'Title',
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            item['price'] ?? '',
+                            style: TextStyle(color: primaryColor, fontWeight: FontWeight.w800),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );

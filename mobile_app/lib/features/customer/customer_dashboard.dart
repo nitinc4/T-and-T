@@ -92,7 +92,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
       body: ListView.builder(
         itemCount: layout.length,
         itemBuilder: (context, index) {
-          return SDUIEngine.buildWidget(layout[index], _primaryColor);
+          return SDUIEngine.buildWidget(context, layout[index], _primaryColor);
         },
       ),
     );

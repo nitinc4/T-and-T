@@ -4,6 +4,8 @@ import '../../features/onboarding/role_selection.dart';
 import '../../features/onboarding/client_selection.dart';
 import '../../features/customer/customer_dashboard.dart';
 
+import '../../features/customer/package_details_screen.dart';
+
 final appRouter = GoRouter(
   initialLocation: '/',
   routes: [
@@ -22,6 +24,13 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/customer-dashboard',
       builder: (context, state) => const CustomerDashboard(),
+    ),
+    GoRoute(
+      path: '/package-details',
+      builder: (context, state) {
+        final packageData = state.extra as Map<String, dynamic>;
+        return PackageDetailsScreen(packageData: packageData);
+      },
     ),
     // TODO: Add Driver Dashboard Route
   ],
