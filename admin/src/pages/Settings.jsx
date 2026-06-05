@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import api from '../api';
+import api from '../api/axios';
 
 const Settings = () => {
   const [razorpayKeyId, setRazorpayKeyId] = useState('');
